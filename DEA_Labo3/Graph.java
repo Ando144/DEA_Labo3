@@ -107,68 +107,51 @@ public class Graph {
   }
 
   public ArrayList<String> erlazionatutaEXTRA(String a1, String a2){
-		boolean aux=erlazionatuta(a1,a2);
-		boolean atera=false;
-		Queue<String> aztGabe = new LinkedList<String>();
-		HashSet<String> aztertuak = new HashSet<String>();
-		
-    Stack<String> nondik = new Stack<String>();//pila honen helburua, grafoaren elementu bakoitza nondik etorri den jakitea da
-		Stack<String> adabegia = new Stack<String>();//pila honetan, grafoaren elementu guztiak sartuko ditugu
-		
-    aztGabe.add(a1);
-		aztertuak.add(a1);
-		adabegia.add(a1);
-		//lehenengo elementua sartuko dugu, geroago aterako balitz, berriro ez sartzeko
-		
-    ArrayList<String> emaitza=new ArrayList<String>();
-		if(aux){//bi aktoreak konektatuta badaude sartuko da
-			while(!aztGabe.isEmpty() && !atera){ 
-				String lag= aztGabe.remove();
-				if(lag.equals(a2)){
-					atera=true; 
-				}else{
-					ArrayList<String> array = g.get(lag);
-					Iterator<String> itr = array.iterator();
-					while(itr.hasNext()){
-						String izena = itr.next();
-						if(!aztertuak.contains(izena)){
-							aztGabe.add(izena);
-							aztertuak.add(izena);
-							nondik.add(lag);//hemen, lehen esan den bezala, beste datu egituretan sartzen ari garen elementuaren
-							//gurasoak sartuko ditugu
-							adabegia.add(izena);
-							//aurreko metodoan egin den bezala, datu egitura guztietan sartuko da, berriro ere ateratzen bada
-							//elementu berdina, ez sartzeko
-						}
-					}
-				}
-			}//ARRAYLIST-A BETETZEN HASI
-			String aurrekoa=a2;//Lehenengo elementua sartuko dugu pilan
-			Stack<String> emaitza2 = new Stack<String>();
-			emaitza2.push(a2);
-			while(!adabegia.isEmpty() && !aurrekoa.equals(a1)){
-				while(!adabegia.peek().equals(aurrekoa) && !nondik.isEmpty()){
-					//while honetan, aurrekoa atributuan daukagun balioa aurkitu beharko dugu adabegia pilan, eta hau egiten dugun
-					//bitartean, nondik pilan elementuak ateratzen joango gara.
-					//Elementua aurkitzean, nondik pilan dagoen azken String-a, elementuaren gurasoa izango da, eta hau pilan
-					//sartuko dugu. Nondik, hutsa denean, azken-aurreko elementura iritsi gara(azken elementua metodoaren parametroko
-					//string bat da)
-					nondik.pop();
-					adabegia.pop();
-				}
-				aurrekoa = nondik.pop();
-				emaitza2.push(aurrekoa);
-				adabegia.pop();
-			}
-			//momentu honetan, bi aktoreen arteko erlazioaren bidea pilan dago, eta orain arrayListera pasako dugu
-			while(!emaitza2.isEmpty()){
-				emaitza.add(emaitza2.pop());
-			}
-			
-		}
-		else{
-			System.out.println("Aktoreak ez daude konektatuta");
-		}
-		return emaitza;
-	}
+		ArrayList<String> emaitza = new ArrayList<String>();
+    //este metodo es igual que el anterior pero en vez de devolver un boolean devuelve un arraylist con los actores que estan en el camino
+    //entre los dos actores que se pasan como parametro
+    Queue<Integer> aztertuGabeak = new LinkedList<Integer>();
+    
+    int pos1 = th.get(a1);
+    int pos2 = th.get(a2);
+    boolean aurkitua = false;
+      // KODEA INPLEMENTATU    
+    aztertuGabeak.add(pos1);//añadimos el primer actor a la cola 
+    HashSet<String> aztertuak = new HashSet<String>();
+    while(!aztertuGabeak.isEmpty() && !aurkitua){
+      int pos = aztertuGabeak.remove();
+      if(pos==pos2){
+          aurkitua=true;
+      }
+      else{
+          Iterator<Integer> itr = adjList[pos].iterator();
+          while(itr.hasNext()){
+              int pos3 = itr.next();
+              if(!aztertuak.contains(keys[pos3])){//comprueba si el actor ya ha sido añadido a la lista 
+                  aztertuGabeak.add(pos3);
+                  aztertuak.add(keys[pos3]);
+              }
+          }
+      }
+    }
+    if(aurkitua){
+        Stack<String> pila = new Stack<String>();
+        pila.push(a2);
+        int pos = pos2;
+        while(pos!=pos1){
+            Iterator<Integer> itr = adjList[pos].iterator();
+            while(itr.hasNext()){
+                int pos3 = itr.next();
+                if(aztertuak.contains(keys[pos3])){
+                    pila.push(keys[pos3]);
+                    pos=pos3;
+                }
+            }
+        }
+        while(!pila.isEmpty()){
+            emaitza.add(pila.pop());
+        }
+    }
+    return emaitza;
+  }
 }
